@@ -1,20 +1,15 @@
 
 import {Router} from "./router"
-import HistoryApiAdapter from  "../../adapters/HistoryApiAdapter"
+import HistoryApiAdapterFactory from  "../../adapters/HistoryApiAdapter"
+
+var HistoryApiAdapter = HistoryApiAdapterFactory(mount, document.getElementById('content'));
 
 function mount(data){
   document.getElementById('content').innerHTML = data;
 }
-var FrontendAdapter = HistoryApiAdapter(mount);
-Router.use(FrontendAdapter);
 
-document.getElementById('content').onclick = function(e){
-  e.preventDefault()
-  e.stopPropagation();
-  if(e.target.nodeType == 1 && e.target.href && e.target.href.indexOf(document.location.origin) == 0 ) {//is a link
-    Router.router.transitionTo(e.target.pathname)
-  }
-}
+
+var FrontendAdapter = HistoryApiAdapter(Router);
 
 module.exports = function(state){
   mount(FrontendAdapter.renderer(Router.prepareRenderData(state)));

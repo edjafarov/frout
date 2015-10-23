@@ -132,6 +132,24 @@ module.exports = function PPRouterFactory(){
     }, state)
   }
 
+
+  PPRouter.handleURL = function(url, context){
+    var handler = router.handleURL.call(router, url);
+    if(context) handler._context = context;
+
+    return new Promise(function(resolve, reject){
+      handler.then(function(){
+        resolve({
+          renderData: handler.renderData,
+          handler: handler
+        });
+      })
+      handler.catch(function(err){
+        reject(err)
+      });
+    })
+  }
+
   PPRouter.use = function(adapter){
     if(!adapter) throw new Error("Adapter required");
     if(adapter.renderer) renderer = adapter.renderer;

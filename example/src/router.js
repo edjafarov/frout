@@ -4,9 +4,9 @@ var Router = RouterFactory();
 
 Router(function(Router){
   Router('/items', function(Router){
-    Router('/:id').component(itemComp).then(getItem);
-  }).component(itemsComp).then(getItems);
-}).component(rootComp).then(count)
+    Router('/:id').component(itemComp).do(getItem);
+  }).component(itemsComp).do(getItems);
+}).component(rootComp).do(count)
 
 
 function itemComp(params){

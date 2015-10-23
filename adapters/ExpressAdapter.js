@@ -1,4 +1,4 @@
-function ExpressAppAdapter(app, layout){
+function ExpressAppAdapterFactory(layout){
   layout = layout || function(html){return html};
   var adapter = {
     //renderData is a hash of data, params, and component
@@ -33,23 +33,22 @@ function ExpressAppAdapter(app, layout){
       return renderComp(renderArr);
     }
   };
-
-  app.use(function(req, res, next){
-    if(req.method == 'GET'){
-      adapter.handleURL(req.originalUrl, req.context).then(function(data){
-        res.send(layout(adapter.renderer(data.renderData), data.renderData) || "");
-        data.handler.router.reset();
-        res.end();
-      }).catch(function(e){
-        if(e.name == 'UnrecognizedURLError') return next();
-        console.log(e);
-      });
-      return;
+  return function ExpressAppAdapter(PPRouter){
+    return function ExpressAppAdapterMiddleware(req, res, next){
+      if(req.method == 'GET'){
+        PPRouter.handleURL(req.originalUrl, req.context).then(function(data){
+          res.send(layout(adapter.renderer(data.renderData), data.renderData) || "");
+          data.handler.router.reset();
+          res.end();
+        }).catch(function(e){
+          if(e.name == 'UnrecognizedURLError') return next();
+          console.log(e);
+        });
+        return;
+      }
+      next();
     }
-    next();
-  })
-
-  return adapter;
+  }
 }
 
-module.exports = ExpressAppAdapter;
+module.exports = ExpressAppAdapterFactory;

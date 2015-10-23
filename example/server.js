@@ -1,7 +1,7 @@
 var express = require('express');
 var app = express();
 import {Router} from "./src/router"
-import ExpressAppAdapter from "../adapters/ExpressAdapter.js"
+import ExpressAppAdapterFactory from "../adapters/ExpressAdapter.js"
 
 function layout(html, renderData){
   var stateString = JSON.stringify(renderData);
@@ -17,10 +17,10 @@ function layout(html, renderData){
 </body>
 </html>`;
 }
+var ExpressAppAdapter = ExpressAppAdapterFactory(layout);
 
 app.use(express.static("./"))
-Router.use(ExpressAppAdapter(app, layout));
 
-
+app.use(ExpressAppAdapter(Router));
 
 app.listen(3000);
